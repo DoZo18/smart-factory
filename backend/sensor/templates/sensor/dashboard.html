@@ -1,17 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Page</title>
-
-    <!-- CSS -->
+    <title>Smart Factory Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<body class="p-4">
 
-<body>
+<div class="container">
+    <h1 class="text-primary mb-4">Smart Factory Dashboard</h1>
 
-    <h1 class="text-primary">Hello</h1>
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Avg Air Temp</h5>
+                    <p class="card-text">{{ avg_air_temp }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Avg Process Temp</h5>
+                    <p class="card-text">{{ avg_process_temp }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Machine Failures</h5>
+                    <p class="card-text">{{ total_fail }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Sensor Table -->
+    <h2>Sensor Data Table (ล่าสุด {{ limit }} รายการ)</h2>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Air Temp [K]</th>
+                    <th>Process Temp [K]</th>
+                    <th>Rotational Speed [rpm]</th>
+                    <th>Machine Failure</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in data %}
+                <tr>
+                    <td>{{ d.id }}</td>
+                    <td>{{ d.air_temperature }}</td>
+                    <td>{{ d.process_temperature }}</td>
+                    <td>{{ d.rotational_speed }}</td>
+                    <td>{{ d.machine_failure }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Chart -->
+    <h2>Sensor Trends</h2>
+    <canvas id="sensorChart" height="400"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('sensorChart').getContext('2d');
+    const sensorChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [
+                {
+                    label: 'Air Temp [K]',
+                    data: {{ air_temp|safe }},
+                    borderColor: 'red',
+                    fill: false
+                },
+                {
+                    label: 'Process Temp [K]',
+                    data: {{ process_temp|safe }},
+                    borderColor: 'blue',
+                    fill: false
+                },
+                {
+                    label: 'Machine Failure',
+                    data: {{ machine_fail|safe }},
+                    borderColor: 'green',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
