@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% load static %}
     <title>Smart Factory Dashboard</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -11,12 +13,12 @@
 
 <div class="container">
     <h1 class="text-primary mb-2">Smart Factory Dashboard</h1>
-    <p class="text-muted mb-4">สรุปค่าเฉลี่ยและสถานะเครื่องจักรจากข้อมูลล่าสุดในระบบ</p>
+    <p class="text-muted mb-4 subtitle-text">สรุปค่าเฉลี่ยและสถานะเครื่องจักรจากข้อมูลล่าสุดในระบบจำนวน {{length}} เครื่อง</p>
 
     <!-- KPI Cards -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-4">
         <div class="col">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100 avg-air-temp">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Avg Air Temp [K]</h6>
                     <h3 class="card-title">{{ avg_air_temp }}</h3>
@@ -24,7 +26,7 @@
             </div>
         </div>
         <div class="col">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100 avg-process-temp">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Avg Process Temp [K]</h6>
                     <h3 class="card-title">{{ avg_process_temp }}</h3>
@@ -32,7 +34,7 @@
             </div>
         </div>
         <div class="col">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100 avg-rotational-speed">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Avg Rotational Speed [rpm]</h6>
                     <h3 class="card-title">{{ avg_rotational_speed }}</h3>
@@ -40,11 +42,11 @@
             </div>
         </div>
         <div class="col">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100 machine-failures">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">Machine Failures</h6>
-                    <h3 class="card-title">{{ total_fail }}</h3>
-                    <p class="mb-0 text-muted">Failure rate: {{ failure_rate }}</p>
+                    <h3 class="card-title">{{ total_fail }} </h3>
+                    <p class="mb-0 text-muted failure-rate-text">Failure rate: {{ failure_rate }}</p>
                 </div>
             </div>
         </div>
@@ -55,10 +57,10 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div>
                     <h2 class="h5 mb-1">Sensor Trends</h2>
-                    <p class="text-muted mb-0">แสดงค่าจาก {{ limit }} รายการล่าสุด</p>
+                    <p class="text-muted mb-0 chart-info-text">แสดงค่าจาก {{ limit }} รายการล่าสุด</p>
                 </div>
             </div>
-            <div style="min-height: 320px;">
+            <div style="min-height: 450px;">
                 <canvas id="sensorChart" style="width: 100%; height: 100%;"></canvas>
             </div>
         </div>
@@ -75,21 +77,21 @@
                 {
                     label: 'Air Temp [K]',
                     data: {{ air_temp|safe }},
-                    borderColor: 'red',
+                    borderColor: '#ff6b6b',
                     tension: 0.2,
                     fill: false
                 },
                 {
                     label: 'Process Temp [K]',
                     data: {{ process_temp|safe }},
-                    borderColor: 'blue',
+                    borderColor: '#4ecdc4',
                     tension: 0.2,
                     fill: false
                 },
                 {
                     label: 'Machine Failure',
                     data: {{ machine_fail|safe }},
-                    borderColor: 'green',
+                    borderColor: '#45b7d1',
                     tension: 0.2,
                     fill: false,
                     yAxisID: 'y1'
@@ -99,11 +101,30 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e0e0e0'
+                    }
+                }
+            },
             scales: {
+                x: {
+                    ticks: {
+                        color: '#e0e0e0'
+                    },
+                    grid: {
+                        color: '#555'
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
+                        color: '#e0e0e0',
                         maxTicksLimit: 6
+                    },
+                    grid: {
+                        color: '#555'
                     }
                 },
                 y1: {
@@ -111,6 +132,7 @@
                     beginAtZero: true,
                     grid: { drawOnChartArea: false },
                     ticks: {
+                        color: '#e0e0e0',
                         maxTicksLimit: 6
                     }
                 }
