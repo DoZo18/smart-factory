@@ -10,66 +10,59 @@
 <body class="p-4">
 
 <div class="container">
-    <h1 class="text-primary mb-4">Smart Factory Dashboard</h1>
+    <h1 class="text-primary mb-2">Smart Factory Dashboard</h1>
+    <p class="text-muted mb-4">สรุปค่าเฉลี่ยและสถานะเครื่องจักรจากข้อมูลล่าสุดในระบบ</p>
 
     <!-- KPI Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-danger mb-3">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Avg Air Temp</h5>
-                    <p class="card-text">{{ avg_air_temp }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Avg Air Temp [K]</h6>
+                    <h3 class="card-title">{{ avg_air_temp }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Avg Process Temp</h5>
-                    <p class="card-text">{{ avg_process_temp }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Avg Process Temp [K]</h6>
+                    <h3 class="card-title">{{ avg_process_temp }}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Machine Failures</h5>
-                    <p class="card-text">{{ total_fail }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Avg Rotational Speed [rpm]</h6>
+                    <h3 class="card-title">{{ avg_rotational_speed }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Machine Failures</h6>
+                    <h3 class="card-title">{{ total_fail }}</h3>
+                    <p class="mb-0 text-muted">Failure rate: {{ failure_rate }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sensor Table -->
-    <h2>Sensor Data Table (ล่าสุด {{ limit }} รายการ)</h2>
-    <div class="table-responsive mb-4">
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Air Temp [K]</th>
-                    <th>Process Temp [K]</th>
-                    <th>Rotational Speed [rpm]</th>
-                    <th>Machine Failure</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for d in data %}
-                <tr>
-                    <td>{{ d.id }}</td>
-                    <td>{{ d.air_temperature }}</td>
-                    <td>{{ d.process_temperature }}</td>
-                    <td>{{ d.rotational_speed }}</td>
-                    <td>{{ d.machine_failure }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h2 class="h5 mb-1">Sensor Trends</h2>
+                    <p class="text-muted mb-0">แสดงค่าจาก {{ limit }} รายการล่าสุด</p>
+                </div>
+            </div>
+            <div style="min-height: 320px;">
+                <canvas id="sensorChart" style="width: 100%; height: 100%;"></canvas>
+            </div>
+        </div>
     </div>
-
-    <!-- Chart -->
-    <h2>Sensor Trends</h2>
-    <canvas id="sensorChart" height="400"></canvas>
 </div>
 
 <script>
@@ -83,26 +76,44 @@
                     label: 'Air Temp [K]',
                     data: {{ air_temp|safe }},
                     borderColor: 'red',
+                    tension: 0.2,
                     fill: false
                 },
                 {
                     label: 'Process Temp [K]',
                     data: {{ process_temp|safe }},
                     borderColor: 'blue',
+                    tension: 0.2,
                     fill: false
                 },
                 {
                     label: 'Machine Failure',
                     data: {{ machine_fail|safe }},
                     borderColor: 'green',
-                    fill: false
+                    tension: 0.2,
+                    fill: false,
+                    yAxisID: 'y1'
                 }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                y: { beginAtZero: true }
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        maxTicksLimit: 6
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    beginAtZero: true,
+                    grid: { drawOnChartArea: false },
+                    ticks: {
+                        maxTicksLimit: 6
+                    }
+                }
             }
         }
     });
