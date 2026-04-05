@@ -1,5 +1,6 @@
 import json
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from .models import SensorData
 
 def dashboard(request):
@@ -38,4 +39,38 @@ def dashboard(request):
         'machine_fail':         json.dumps(machine_fail),
     }
     return render(request, 'sensor/dashboard.html', context)
+
+
+def data_table(request):
+    """แสดงข้อมูลตารางทั้งหมดพร้อม pagination"""
+    page_number = request.GET.get('page', 1)
+    failure_query = request.GET.get('failure', '')
+    
+    # ดึงข้อมูลทั้งหมดและกรองตาม Failure หากมีการเลือก
+    all_data = SensorData.objects.all().order_by('id')
+    if failure_query in ['0', '1']:
+        all_data = all_data.filter(machine_failure=int(failure_query))
+    
+    # Pagination - 20 แถวต่อหน้า
+    paginator = Paginator(all_data, 20)
+    page_obj = paginator.get_page(page_number)
+    
+    # สำหรับการ predict (ในตอนนี้ใช้ N/A)
+    for item in page_obj:
+        item.predicted_failure = predict_failure()
+    
+    context = {
+        'page_obj': page_obj,
+        'total_records': paginator.count,
+        'failure_query': failure_query,
+    }
+    return render(request, 'sensor/table.html', context)
+
+
+def predict_failure():
+    """
+    ฟังก์ชัน predict_failure - ตอนนี้เป็น placeholder
+    ในอนาคตสามารถต่อเชื่อมกับ ML model ได้
+    """
+    return "N/A"
 
