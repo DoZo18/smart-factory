@@ -1,0 +1,100 @@
+/* Dark Theme Styles */
+body {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Main subtitle text - more visible */
+p.subtitle-text {
+    color: #d0d0d0 !important;
+    font-size: 1.5rem !important;
+    font-weight: 500 !important;
+}
+
+/* Chart info text - more visible */
+p.chart-info-text {
+    color: #d0d0d0 !important;
+    font-size: 1.25rem !important;
+    font-weight: 500 !important;
+}
+
+/* Failure rate text - more visible */
+p.failure-rate-text {
+    color: #d0d0d0 !important;
+    font-weight: 500 !important;
+}
+
+/* KPI Card Styles */
+.card {
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #e0e0e0;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-subtitle {
+    color: #bbb;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.card-title {
+    color: #e0e0e0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.text-muted {
+    color: #888 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #e0e0e0;
+}
+
+/* Specific card colors */
+.avg-air-temp {
+    border-left: 4px solid #4dabf7;
+}
+
+.avg-air-temp .card-subtitle {
+    color: #4dabf7 !important;
+}
+
+.avg-process-temp {
+    border-left: 4px solid #51cf66;
+}
+
+.avg-process-temp .card-subtitle {
+    color: #51cf66 !important;
+}
+
+.avg-rotational-speed {
+    border-left: 4px solid #ffd43b;
+}
+
+.avg-rotational-speed .card-subtitle {
+    color: #ffd43b !important;
+}
+
+.machine-failures {
+    border-left: 4px solid #ff6b6b;
+}
+
+.machine-failures .card-subtitle {
+    color: #ff6b6b !important;
+}
