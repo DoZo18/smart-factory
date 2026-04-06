@@ -1,7 +1,8 @@
 import json
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from .models import SensorData
+from .models import SensorData 
+from django.http import JsonResponse
 
 def dashboard(request):
     limit = int(request.GET.get('limit', 20))
@@ -66,6 +67,31 @@ def data_table(request):
     }
     return render(request, 'sensor/table.html', context)
 
+def form_view(request):
+    if request.method == 'POST':
+        sensor_id = request.POST.get('sensor_id')
+        print("sensor_id = ", sensor_id)
+        try:
+            data = SensorData.objects.get(id=sensor_id)
+            context = {
+                'id': data.id,
+                'air_temperature': data.air_temperature,
+                'process_temperature': data.process_temperature,
+                'rotational_speed': data.rotational_speed,
+                'torque': data.torque,
+                'tool_wear': data.tool_wear,
+                'machine_failure': data.machine_failure,
+            }
+            return JsonResponse({'success': True, 'sensor_data': context})
+        except SensorData.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Sensor ID not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+    # GET request - ส่งจำนวน sensor กลับมา
+    max_sensor_id = SensorData.objects.count()
+    context = {'max_sensor_id': max_sensor_id}
+    return render(request, 'sensor/form.html', context)
 
 def predict_failure():
     """

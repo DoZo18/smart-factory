@@ -1,0 +1,60 @@
+<form id="myform" method="post">
+    {%csrf_token %}
+    <label>ID of sensor: </label>
+    <input type="number" name="sensor_id" required min="1" max="{{ max_sensor_id }}">
+    <small>(1 - {{ max_sensor_id }})</small>
+    <button type="submit">submit</button>
+</form>
+
+<h1 id="result"></h1>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM loaded")
+        const maxSensorId = {{ max_sensor_id }};
+        
+        document.getElementById("myform").addEventListener("submit", function(e) {
+            e.preventDefault();
+            console.log("Form submitted");
+            
+            const sensorId = document.querySelector('input[name="sensor_id"]').value;
+            
+            let formData = new FormData(this);
+            fetch("", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => {
+                console.log("Response status:", response.status);
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data received:", data);
+                if (data.success) {
+                    const sensor = data.sensor_data;
+                    document.getElementById("result").innerHTML = `
+                        <h2>Sensor ID: ${sensor.id}</h2>
+                        <p>Air Temperature: ${sensor.air_temperature}</p>
+                        <p>Process Temperature: ${sensor.process_temperature}</p>
+                        <p>Rotational Speed: ${sensor.rotational_speed}</p>
+                        <p>Torque: ${sensor.torque}</p>
+                        <p>Tool Wear: ${sensor.tool_wear}</p>
+                        <p>Machine Failure: ${sensor.machine_failure}</p>
+                    `;
+                } else {
+                    document.getElementById("result").innerText = "Error: " + data.error;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "Error: " + error.message;
+            });
+        });
+    });
+</script>
