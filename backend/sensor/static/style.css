@@ -98,3 +98,137 @@ h1, h2, h3, h4, h5, h6 {
 .machine-failures .card-subtitle {
     color: #ff6b6b !important;
 }
+
+/* Form Styles */
+#myform {
+    max-width: 420px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid #555;
+    border-radius: 12px;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+#myform .form-header {
+    margin-bottom: 1.5rem;
+}
+
+#myform .form-header h2 {
+    color: #e0e0e0;
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 4px;
+}
+
+#myform .form-header p {
+    color: #888;
+    font-size: 13px;
+    margin: 0;
+}
+
+#myform label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #bbb;
+}
+
+#myform label small {
+    background: #2d2d2d;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid #555;
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #666;
+}
+
+#myform input {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 1rem;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background-color: #242424;
+    color: #e0e0e0;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+#myform input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+#myform button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 11px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.1s;
+}
+
+#myform button:hover {
+    background-color: #45a049;
+}
+
+#myform button:active {
+    transform: scale(0.98);
+}
+
+/* Result Section */
+#result {
+    max-width:  420px;
+    margin: 1rem auto;
+    margin-top: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #4a4a4a;
+    border-radius: 10px;
+    background-color: #242424;
+    color: #e0e0e0;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+#result h2 {
+    color: #4dabf7;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+#result ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#result li {
+    display: flex;
+    justify-content: space-between;
+    color: #d0d0d0;
+    padding: 6px 0;
+    border-bottom: 1px solid #333;
+    font-size: 14px;
+}
+
+#result li:last-child {
+    border-bottom: none;
+}

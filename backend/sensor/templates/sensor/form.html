@@ -1,60 +1,128 @@
-<form id="myform" method="post">
-    {%csrf_token %}
-    <label>ID of sensor: </label>
-    <input type="number" name="sensor_id" required min="1" max="{{ max_sensor_id }}">
-    <small>(1 - {{ max_sensor_id }})</small>
-    <button type="submit">submit</button>
-</form>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sensor Form</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+  </head>
+  <body>
+    <form id="myform" method="post">
+      {%csrf_token %}
+      <label>ID of sensor: <small>(1 - {{ max_sensor_id }})</small></label>
+      <input
+        type="number"
+        name="sensor_id"
+        required
+        min="1"
+        max="{{ max_sensor_id }}"
+      />
+      <button type="submit">Submit</button>
+    </form>
 
-<h1 id="result"></h1>
+    <div id="result"></div>
+    <div id="search-history"></div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("DOM loaded")
-        const maxSensorId = {{ max_sensor_id }};
-        
-        document.getElementById("myform").addEventListener("submit", function(e) {
-            e.preventDefault();
-            console.log("Form submitted");
-            
-            const sensorId = document.querySelector('input[name="sensor_id"]').value;
-            
-            let formData = new FormData(this);
-            fetch("", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const HISTORY_KEY = "sensor_search_history";
+        const MAX_HISTORY = 5;
+
+        function getHistory() {
+          return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+        }
+
+        function saveHistory(sensorId) {
+          let history = getHistory().filter((h) => h.id !== sensorId);
+          history.unshift({
+            id: sensorId,
+            time: new Date().toLocaleTimeString(),
+          });
+          if (history.length > MAX_HISTORY)
+            history = history.slice(0, MAX_HISTORY);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+          renderHistory();
+        }
+
+        function renderHistory() {
+          const history = getHistory();
+          const container = document.getElementById("search-history");
+          if (history.length === 0) {
+            container.innerHTML = "";
+            return;
+          }
+
+          container.innerHTML = `
+            <h3>Recent searches</h3>
+            ${history
+              .map(
+                (h) => `
+                <div class="history-item" onclick="loadSensor(${h.id})">
+                    <span class="sensor-id">Sensor #${h.id}</span>
+                    <span class="history-time">${h.time}</span>
+                </div>
+            `,
+              )
+              .join("")}
+        `;
+        }
+
+        window.loadSensor = function (sensorId) {
+          document.querySelector('input[name="sensor_id"]').value = sensorId;
+          document.getElementById("myform").dispatchEvent(new Event("submit"));
+        };
+
+        function fetchSensor(formData) {
+          fetch("", {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": document.querySelector(
+                "[name=csrfmiddlewaretoken]",
+              ).value,
+            },
+          })
+            .then((response) => {
+              if (!response.ok)
+                throw new Error("HTTP error! status: " + response.status);
+              return response.json();
             })
-            .then(response => {
-                console.log("Response status:", response.status);
-                if (!response.ok) {
-                    throw new Error('HTTP error! status: ' + response.status);
-                }
-                return response.json();
+            .then((data) => {
+              if (data.success) {
+                const sensor = data.sensor_data;
+                saveHistory(sensor.id);
+                document.getElementById("result").innerHTML = `
+                    <h2>Sensor #${sensor.id}</h2>
+                    <ul>
+                        <li><span>Air Temperature</span><span>${sensor.air_temperature}</span></li>
+                        <li><span>Process Temperature</span><span>${sensor.process_temperature}</span></li>
+                        <li><span>Rotational Speed</span><span>${sensor.rotational_speed}</span></li>
+                        <li><span>Torque</span><span>${sensor.torque}</span></li>
+                        <li><span>Tool Wear</span><span>${sensor.tool_wear}</span></li>
+                        <li><span>Machine Failure</span><span>${sensor.machine_failure}</span></li>
+                    </ul>
+                `;
+              } else {
+                document.getElementById("result").innerText =
+                  "Error: " + data.error;
+              }
             })
-            .then(data => {
-                console.log("Data received:", data);
-                if (data.success) {
-                    const sensor = data.sensor_data;
-                    document.getElementById("result").innerHTML = `
-                        <h2>Sensor ID: ${sensor.id}</h2>
-                        <p>Air Temperature: ${sensor.air_temperature}</p>
-                        <p>Process Temperature: ${sensor.process_temperature}</p>
-                        <p>Rotational Speed: ${sensor.rotational_speed}</p>
-                        <p>Torque: ${sensor.torque}</p>
-                        <p>Tool Wear: ${sensor.tool_wear}</p>
-                        <p>Machine Failure: ${sensor.machine_failure}</p>
-                    `;
-                } else {
-                    document.getElementById("result").innerText = "Error: " + data.error;
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("result").innerText = "Error: " + error.message;
+            .catch((error) => {
+              document.getElementById("result").innerText =
+                "Error: " + error.message;
             });
-        });
-    });
-</script>
+        }
+
+        document
+          .getElementById("myform")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            fetchSensor(new FormData(this));
+          });
+
+        renderHistory();
+      });
+    </script>
+  </body>
+</html>
