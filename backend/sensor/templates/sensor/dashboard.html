@@ -5,10 +5,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
-{% block body_class %}p-4{% endblock %}
-
 {% block content %}
-
+<div class="p-4">
 <div class="container">
     <h1 class="text-primary mb-2">Smart Factory Dashboard</h1>
     <p class="text-muted mb-4 subtitle-text">สรุปค่าเฉลี่ยและสถานะเครื่องจักรจากข้อมูลล่าสุดในระบบจำนวน {{length}} เครื่อง</p>
@@ -63,7 +61,8 @@
             </div>
         </div>
     </div>
- </div>
+</div>
+</div>
 
 <script>
     const ctx = document.getElementById('sensorChart').getContext('2d');

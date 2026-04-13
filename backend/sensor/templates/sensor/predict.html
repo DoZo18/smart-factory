@@ -5,7 +5,10 @@
 <style>
         body {
             background-color: #2d2d2d !important;
-            min-height: 100vh;
+        }
+
+        .predict-page-wrap {
+            min-height: calc(100vh - 56px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -152,64 +155,66 @@
 {% endblock %}
 
 {% block content %}
-<div class="pc-wrap">
-    <h2 class="pc-title">🔮 Predict Machine Failure</h2>
-    <p class="pc-subtitle">Enter sensor values to get prediction result</p>
+<div class="predict-page-wrap">
+    <div class="pc-wrap">
+        <h2 class="pc-title">🔮 Predict Machine Failure</h2>
+        <p class="pc-subtitle">Enter sensor values to get prediction result</p>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="pc-grid">
-            <div class="pc-field">
-                <label class="pc-label">
-                    Air Temperature
-                    <span class="pc-unit">Kelvin</span>
-                </label>
-                <input class="pc-input" type="number" step="any" name="air_temperature" placeholder="e.g. 298.1" value="{{form_data.air_temperature}}" required>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="pc-grid">
+                <div class="pc-field">
+                    <label class="pc-label">
+                        Air Temperature
+                        <span class="pc-unit">Kelvin</span>
+                    </label>
+                    <input class="pc-input" type="number" step="any" name="air_temperature" placeholder="e.g. 298.1" value="{{form_data.air_temperature}}" required>
+                </div>
+
+                <div class="pc-field">
+                    <label class="pc-label">
+                        Process Temperature
+                        <span class="pc-unit">Kelvin</span>
+                    </label>
+                    <input class="pc-input" type="number" step="any" name="process_temperature" placeholder="e.g. 308.6" value="{{ form_data.process_temperature }}"required>
+                </div>
+
+                <div class="pc-field">
+                    <label class="pc-label">
+                        Rotational Speed
+                        <span class="pc-unit">RPM</span>
+                    </label>
+                    <input class="pc-input" type="number" step="any" name="rotational_speed" placeholder="e.g. 1551" value="{{ form_data.rotational_speed }}" required>
+                </div>
+
+                <div class="pc-field">
+                    <label class="pc-label">
+                        Torque
+                        <span class="pc-unit">Nm</span>
+                    </label>
+                    <input class="pc-input" type="number" step="any" name="torque" placeholder="e.g. 42.8" value="{{ form_data.torque }}" required>
+                </div>
+
+                <div class="pc-field pc-full">
+                    <label class="pc-label">
+                        Tool Wear
+                        <span class="pc-unit">Minutes</span>
+                    </label>
+                    <input class="pc-input" type="number" step="any" name="tool_wear" placeholder="e.g. 0 – 250" value="{{ form_data.tool_wear }}" required>
+                </div>
             </div>
 
-            <div class="pc-field">
-                <label class="pc-label">
-                    Process Temperature
-                    <span class="pc-unit">Kelvin</span>
-                </label>
-                <input class="pc-input" type="number" step="any" name="process_temperature" placeholder="e.g. 308.6" value="{{ form_data.process_temperature }}"required>
+            <button type="submit" class="pc-btn">Predict</button>
+        </form>
+
+        {% if result %}
+            <div class="pc-result {% if 'Failure' in result %}error{% else %}success{% endif %}">
+                {{ result }}
             </div>
+        {% endif %}
 
-            <div class="pc-field">
-                <label class="pc-label">
-                    Rotational Speed
-                    <span class="pc-unit">RPM</span>
-                </label>
-                <input class="pc-input" type="number" step="any" name="rotational_speed" placeholder="e.g. 1551" value="{{ form_data.rotational_speed }}" required>
-            </div>
-
-            <div class="pc-field">
-                <label class="pc-label">
-                    Torque
-                    <span class="pc-unit">Nm</span>
-                </label>
-                <input class="pc-input" type="number" step="any" name="torque" placeholder="e.g. 42.8" value="{{ form_data.torque }}" required>
-            </div>
-
-            <div class="pc-field pc-full">
-                <label class="pc-label">
-                    Tool Wear
-                    <span class="pc-unit">Minutes</span>
-                </label>
-                <input class="pc-input" type="number" step="any" name="tool_wear" placeholder="e.g. 0 – 250" value="{{ form_data.tool_wear }}" required>
-            </div>
-        </div>
-
-        <button type="submit" class="pc-btn">Predict</button>
-    </form>
-
-    {% if result %}
-        <div class="pc-result {% if 'Failure' in result %}error{% else %}success{% endif %}">
-            {{ result }}
-        </div>
-    {% endif %}
-
-    <hr class="pc-divider">
-    <p class="pc-hint">Machine Learning Model Prediction System</p>
+        <hr class="pc-divider">
+        <p class="pc-hint">Machine Learning Model Prediction System</p>
+    </div>
 </div>
 {% endblock %}
