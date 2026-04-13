@@ -113,3 +113,42 @@ def predict_failure(sensor_data):
     prediction = model.predict(data)[0]
     return int(prediction)
 
+from django.shortcuts import render
+import pandas as pd
+import joblib
+
+model = joblib.load('../ml/models/model.pkl')
+
+
+def predict_page(request):
+    result = None
+    form_data = {}
+
+    if request.method == "POST":
+        air_temperature = float(request.POST.get("air_temperature"))
+        process_temperature = float(request.POST.get("process_temperature"))
+        rotational_speed = float(request.POST.get("rotational_speed"))
+        torque = float(request.POST.get("torque"))
+        tool_wear = float(request.POST.get("tool_wear"))
+
+        form_data = {
+            'air_temperature': air_temperature,
+            'process_temperature': process_temperature,
+            'rotational_speed': rotational_speed,
+            'torque': torque,
+            'tool_wear': tool_wear
+        }
+
+        data = pd.DataFrame({
+            'Air_temperature_K': [air_temperature],
+            'Process_temperature_K': [process_temperature],
+            'Rotational_speed_rpm': [rotational_speed],
+            'Torque_Nm': [torque],
+            'Tool_wear_min': [tool_wear]
+        })
+
+        prediction = int(model.predict(data)[0])
+
+        result = "❌ Failure" if prediction == 1 else "✅ Normal"
+
+    return render(request, "sensor/predict.html", {"result": result, "form_data": form_data})

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predict Sensor Failure</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+    <style>
+        body {
+            background-color: #2d2d2d !important;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .pc-wrap {
+            width: 100%;
+            max-width: 680px;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .pc-title {
+            color: #e0e0e0;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            text-align: center;
+        }
+
+        .pc-subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .pc-full { grid-column: 1 / -1; }
+
+        .pc-field { display: flex; flex-direction: column; }
+
+        .pc-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #bbb;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .pc-unit {
+            background: #2d2d2d;
+            border: 1px solid #555;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+            color: #666;
+        }
+
+        .pc-input {
+            background: #242424 !important;
+            border: 1px solid #555 !important;
+            border-radius: 8px !important;
+            color: #e0e0e0 !important;
+            padding: 10px 14px !important;
+            font-size: 15px !important;
+            width: 100% !important;
+            box-shadow: none !important;
+            outline: none !important;
+            transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+
+        .pc-input:focus {
+            border-color: #4dabf7 !important;
+            box-shadow: 0 0 0 3px rgba(77,171,247,0.18) !important;
+            background: #242424 !important;
+            color: #e0e0e0 !important;
+        }
+
+        .pc-input::placeholder { color: #555 !important; }
+
+        .pc-divider {
+            border: none;
+            border-top: 1px solid #4a4a4a;
+            margin: 1.8rem 0 1.2rem;
+        }
+
+        .pc-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4dabf7;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 1.2rem;
+        }
+
+        .pc-btn:hover { background: #339af0; }
+        .pc-btn:active { transform: scale(0.98); }
+
+        .pc-result {
+            margin-top: 1.2rem;
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .pc-result.success {
+            background: rgba(81,207,102,0.12);
+            border: 1px solid #51cf66;
+            color: #51cf66;
+        }
+
+        .pc-result.error {
+            background: rgba(255,107,107,0.12);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .pc-hint {
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 540px) {
+            .pc-grid { grid-template-columns: 1fr; }
+            .pc-full { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="pc-wrap">
+    <h2 class="pc-title">🔮 Predict Machine Failure</h2>
+    <p class="pc-subtitle">Enter sensor values to get prediction result</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="pc-grid">
+            <div class="pc-field">
+                <label class="pc-label">
+                    Air Temperature
+                    <span class="pc-unit">Kelvin</span>
+                </label>
+                <input class="pc-input" type="number" step="any" name="air_temperature" placeholder="e.g. 298.1" value="{{form_data.air_temperature}}" required>
+            </div>
+
+            <div class="pc-field">
+                <label class="pc-label">
+                    Process Temperature
+                    <span class="pc-unit">Kelvin</span>
+                </label>
+                <input class="pc-input" type="number" step="any" name="process_temperature" placeholder="e.g. 308.6" value="{{ form_data.process_temperature }}"required>
+            </div>
+
+            <div class="pc-field">
+                <label class="pc-label">
+                    Rotational Speed
+                    <span class="pc-unit">RPM</span>
+                </label>
+                <input class="pc-input" type="number" step="any" name="rotational_speed" placeholder="e.g. 1551" value="{{ form_data.rotational_speed }}" required>
+            </div>
+
+            <div class="pc-field">
+                <label class="pc-label">
+                    Torque
+                    <span class="pc-unit">Nm</span>
+                </label>
+                <input class="pc-input" type="number" step="any" name="torque" placeholder="e.g. 42.8" value="{{ form_data.torque }}" required>
+            </div>
+
+            <div class="pc-field pc-full">
+                <label class="pc-label">
+                    Tool Wear
+                    <span class="pc-unit">Minutes</span>
+                </label>
+                <input class="pc-input" type="number" step="any" name="tool_wear" placeholder="e.g. 0 – 250" value="{{ form_data.tool_wear }}" required>
+            </div>
+        </div>
+
+        <button type="submit" class="pc-btn">Predict</button>
+    </form>
+
+    {% if result %}
+        <div class="pc-result {% if 'Failure' in result %}error{% else %}success{% endif %}">
+            {{ result }}
+        </div>
+    {% endif %}
+
+    <hr class="pc-divider">
+    <p class="pc-hint">Machine Learning Model Prediction System</p>
+</div>
+</body>
+</html>
