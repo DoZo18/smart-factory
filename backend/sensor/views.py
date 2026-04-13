@@ -3,6 +3,12 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from .models import SensorData 
 from django.http import JsonResponse
+import joblib
+import pandas as pd
+import numpy as np
+
+# โหลดโมเดล
+model = joblib.load('../ml/models/model.pkl')
 
 def dashboard(request):
     limit = int(request.GET.get('limit', 20))
@@ -56,9 +62,9 @@ def data_table(request):
     paginator = Paginator(all_data, 20)
     page_obj = paginator.get_page(page_number)
     
-    # สำหรับการ predict (ในตอนนี้ใช้ N/A)
+    # สำหรับการ predict
     for item in page_obj:
-        item.predicted_failure = predict_failure()
+        item.predicted_failure = predict_failure(item)
     
     context = {
         'page_obj': page_obj,
@@ -93,10 +99,17 @@ def form_view(request):
     context = {'max_sensor_id': max_sensor_id}
     return render(request, 'sensor/form.html', context)
 
-def predict_failure():
+def predict_failure(sensor_data):
     """
-    ฟังก์ชัน predict_failure - ตอนนี้เป็น placeholder
-    ในอนาคตสามารถต่อเชื่อมกับ ML model ได้
+    ฟังก์ชัน predict_failure - ใช้ ML model ในการทำนาย
     """
-    return "N/A"
+    data = pd.DataFrame({
+        'Air_temperature_K': [sensor_data.air_temperature],
+        'Process_temperature_K': [sensor_data.process_temperature],
+        'Rotational_speed_rpm': [sensor_data.rotational_speed],
+        'Torque_Nm': [sensor_data.torque],
+        'Tool_wear_min': [sensor_data.tool_wear]
+    })
+    prediction = model.predict(data)[0]
+    return int(prediction)
 
